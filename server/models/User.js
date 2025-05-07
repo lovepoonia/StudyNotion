@@ -21,6 +21,10 @@ const userSchema = new mongoose.Schema({
         type:String,
         required:true,
     },
+    confirmPassword:{
+        type:String,
+        required:true,
+    },
     accountType:{
         type:String,
         required:true,
@@ -40,6 +44,12 @@ const userSchema = new mongoose.Schema({
     image:{
         type:String,
         default:"https://pinnacle.works/wp-content/uploads/2022/06/dummy-image.jpg"
+    },
+    token:{
+        type:String
+    },
+    resetPasswordExpires :{
+        type:Date
     },
     courseProgress:[
         {
