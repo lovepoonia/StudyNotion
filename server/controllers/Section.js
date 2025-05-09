@@ -20,7 +20,7 @@ exports.createSection = async (req , res) => {
                 $push: {courseContent: newSection._id}
             },
             {new:true}
-        ).populate("Section", ["name" , "subSection"]);
+        ).populate("courseContent", ["name" , "subSection"]);
 
         return res.status(200).json({
             success:true,
