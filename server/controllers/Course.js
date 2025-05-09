@@ -1,5 +1,5 @@
 const User = require("../models/User");
-const Tag = require("../models/Tag");
+const Category = require("../models/Category");
 const Course = require("../models/Course");
 const { uploadImageToCloudinary } = require("../utils/imageUploder");
 
@@ -7,10 +7,10 @@ const { uploadImageToCloudinary } = require("../utils/imageUploder");
 //create course
 exports.createCourse = async (req , res) => {
     try {
-        const {courseName , courseDescription, language, whatYouWillLearn, price , tag} = req.body;
+        const {courseName , courseDescription, language, whatYouWillLearn, price , tag , category } = req.body;
         const thumbnail = req.files.thumbnailImage;
     
-        if(!courseName || !courseDescription || !language || !whatYouWillLearn || !price || !tag || !thumbnail){
+        if(!courseName || !courseDescription || !language || !whatYouWillLearn || !price || !tag || !thumbnail || !category){
             return res.status(400).json({
                 success: false,
                 message: "All Fields are Mandatory",
@@ -26,11 +26,11 @@ exports.createCourse = async (req , res) => {
             })
         }
     
-        const tagDetails = await Tag.findById(tag);
-        if (!tagDetails) {
+        const categoryDetails = await Category.findById(tag);
+        if (!categoryDetails) {
             return res.status(404).json({
               success: false,
-              message: "Tag Details Not Found",
+              message: "Category Details Not Found",
             })
         }
     
@@ -42,7 +42,8 @@ exports.createCourse = async (req , res) => {
             instructor: instructorDetails._id,
             whatYouWillLearn: whatYouWillLearn,
             price,
-            tag : tagDetails._id,
+            tag,
+            category : categoryDetails._id,
             language,
             thumbnail: thumbnailImage.secure_url,
         })
@@ -59,8 +60,8 @@ exports.createCourse = async (req , res) => {
             { new: true }
         )
     
-        await Tag.findByIdAndUpdate(
-            { _id: tag },
+        await Category.findByIdAndUpdate(
+            { _id: category },
             {
               $push: {
                 courses: newCourse._id,
