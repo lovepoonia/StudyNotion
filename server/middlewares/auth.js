@@ -10,12 +10,12 @@ exports.auth = async (req,res,next) => {
             return res.status(401).json({
                 success:false,
                 error: "Unauthorized",
-                message: "Please login to access this resource"
+                message: "Please login to access this resource token not found"
             });
         }
         //verify the token
         try {
-            const verifyToken = await jwt.verify(token, process.env.SECRET_KEY);
+            const verifyToken = await jwt.verify(token, process.env.JWT_SECRET);
             console.log(verifyToken);
             req.user = verifyToken;
         } catch (error) {

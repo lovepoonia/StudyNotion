@@ -6,7 +6,7 @@ const { uploadImageToCloudinary } = require("../utils/imageUploder");
 //create course
 exports.createCourse = async (req, res) => {
   try {
-    const {
+    let {
       courseName,
       courseDescription,
       language,
@@ -38,7 +38,7 @@ exports.createCourse = async (req, res) => {
     if (!status || status === undefined) {
 			status = "Draft";
 		}
-    const userId = res.user._id;
+    const userId = req.user.id;
     const instructorDetails = await User.findById(userId , {
 			accountType: "Instructor",
 		});
@@ -153,7 +153,7 @@ exports.getCourseDetails = async (req, res) => {
         populate: { path: "additionalDetails" } 
       })
       .populate("category")
-      .populate("ratingAndReview")
+      //.populate("ratingAndReview")
       .populate({
         path: "courseContent",
         populate: { path: "subSection" },

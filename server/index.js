@@ -8,7 +8,7 @@ const {cloudinaryConnect} = require("./config/cloudinary");
 const fileUpload = require("express-fileupload")
 
 
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 7000;
 
 const userRoutes = require("./routes/User");
 const courseRoutes = require("./routes/Course");
