@@ -1,6 +1,7 @@
 const User = require("../models/User");
 const mailSender = require("../utils/mailSender");
 const bcrypt = require("bcrypt");
+const crypto = require("crypto")
 
 //reset password token
 exports.resetPasswordToken = async (req , res) => {
@@ -14,12 +15,12 @@ exports.resetPasswordToken = async (req , res) => {
             })
         } 
     
-        const token = crypto.randomUUID();
+        const token = crypto.randomBytes(20).toString("hex");
     
         const updatedDetail = await User.findOneAndUpdate(
             {email} ,
             {token,
-                resetPasswordExpires : Date.now() * 10*60*1000,
+                resetPasswordExpires : Date.now() + 3600000,
             },
             {new:true}
         )
@@ -60,7 +61,7 @@ exports.resetPassword = async (req , res) => {
             })
         }
 
-        if(userDetail.resetPasswordExpires< Date.now()){
+        if(!(userDetail.resetPasswordExpires< Date.now())){
             return res.status(400).json({
                 success:false,
                 msg: "Password reset link has expired"

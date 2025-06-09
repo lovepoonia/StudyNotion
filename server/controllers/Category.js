@@ -1,6 +1,6 @@
 const Category = require("../models/Category");
 
-//create tags
+//create category
 exports.createCategory = async (req, res) => {
     try {
         const {name, description} = req.body;
@@ -16,7 +16,7 @@ exports.createCategory = async (req, res) => {
     
         return res.status(200).json({
             success: true,
-            message: "Tag created successfully",
+            message: "Categorys created successfully",
             data: categoryDetails
         })
     } catch (error) {
@@ -27,14 +27,14 @@ exports.createCategory = async (req, res) => {
     }
 }
 
-//get all tag
-exports.showAllCategory = async (req , res) => {
+//get all category
+exports.showAllCategory = async (req , res) => {	
     try {
         const category = await Category.find({} , {name:true, description:true});
 
         return res.status(200).json({
             success: true,
-            message: "Tags fetched successfully",
+            message: "Category fetched successfully",
             data: category
         })
     } catch (error) {
@@ -63,7 +63,7 @@ exports.categoryPageDetails = async (req, res) => {
 				.json({ success: false, message: "Category not found" });
 		}
 		// Handle the case when there are no courses
-		if (selectedCategory.courses.length === 0) {
+		if (selectedCategory.course.length === 0) {
 			console.log("No courses found for the selected category.");
 			return res.status(404).json({
 				success: false,
@@ -71,15 +71,15 @@ exports.categoryPageDetails = async (req, res) => {
 			});
 		}
 
-		const selectedCourses = selectedCategory.courses;
+		const selectedCourses = selectedCategory.course;
 
 		// Get courses for other categories
 		const categoriesExceptSelected = await Category.find({
 			_id: { $ne: categoryId },
-		}).populate("courses");
+		}).populate("courses").exec();
 		let differentCourses = [];
 		for (const category of categoriesExceptSelected) {
-			differentCourses.push(...category.courses);
+			differentCourses.push(...category.course);
 		}
 
 		// Get top-selling courses across all categories

@@ -59,9 +59,8 @@ exports.signUp = async (req, res) => {
             email,
             password,
             confirmPassword,
-            otp,
             accountType,
-            contactNumber
+            contactNumber,otp
         } = req.body;
 
         if(!firstName || !lastName || !email || !password || !confirmPassword || !otp){
@@ -86,15 +85,15 @@ exports.signUp = async (req, res) => {
             })
         }
 
-        const recentOtp = await OTP.findOne({email}).sort({createdAt:-1}).limit(1);
+        const recentOtp = await OTP.find({email}).sort({createdAt:-1}).limit(1);
         console.log(recentOtp);
 
-        if(recentOtp.length == 0){
+        if(recentOtp && recentOtp.length === 0){
             return res.status(400).json({
                 success:false,
                 message:"OTP NOT FOUND"
             })
-        } else if(otp !== recentOtp.otp){
+        } else if(otp !== recentOtp[0]?.otp){
             return res.status(400).json({
                 success:false,
                 message:"Invalid OTP"
@@ -128,7 +127,7 @@ exports.signUp = async (req, res) => {
     } catch (error) {
         return res.status(500).json({
             success: false,
-            message: error.message
+            message: `fill ${error.message}`
         })
     }
 }
@@ -145,7 +144,7 @@ exports.login = async (req, res) =>{
             })
         }
 
-        const user = await User.findOne({email});
+        const user = await User.findOne({email}).populate("additionalDetails");
         if(!user){
             return res.status(401).json({
                 success:false,
@@ -161,7 +160,7 @@ exports.login = async (req, res) =>{
                 accountType:user.accountType
             }
             const token = jwt.sign(payload, process.env.SECRET_KEY,{
-                expiresIn:"2h"
+                expiresIn:"24h"
             })
             user.token = token;
             user.password = undefined;
@@ -216,7 +215,7 @@ exports.changePassword = async (req, res) =>{
         if(newPassword !== confirmPassword){
             return res.status(400).json({
                 success: false,
-                message: "Passwords do not match"
+                message: "The password and confirm password does not match"
             })
         }
 

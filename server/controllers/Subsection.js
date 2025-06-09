@@ -17,14 +17,14 @@ exports.createSubSection = async (req, res) => {
         }
         const videoUplodeDetails = await uploadImageToCloudinary(video, process.env.FOLDER_NAME);
         const subSectionDetails = await SubSection.create({
-            title, timeDuration , description, video: videoUplodeDetails.secure_url
+            title, timeDuration:`${videoUplodeDetails.duration}` , description, video: videoUplodeDetails.secure_url
         })
 
         const updateSectionDetail = await Section.findByIdAndUpdate(
-            sectionId,
+            {_id:sectionId},
             { $push: { subSections: subSectionDetails._id } },
             { new: true }
-        ).populate("Section", ["name" , "subSection"]);
+        ).populate("subSection")
 
         return res.status(200).json({
             success:true,

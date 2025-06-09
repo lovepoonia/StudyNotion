@@ -4,15 +4,15 @@ const Course = require("../models/Course");
 //create section
 exports.createSection = async (req , res) => {
     try {
-        const { name, courseId} = req.body;
-        if(!name || !courseId){
+        const { sectionName , courseId} = req.body;
+        if(!sectionName || !courseId){
             return res.status(400).json({
                 success:false,
                 message: "Please fill in all fields."
             });
         }
 
-        const newSection = await Section.create({name});
+        const newSection = await Section.create({sectionName});
 
         const updateCoursesDetails = await Course.findByIdAndUpdate(
             courseId,
@@ -20,7 +20,13 @@ exports.createSection = async (req , res) => {
                 $push: {courseContent: newSection._id}
             },
             {new:true}
-        ).populate("courseContent", ["name" , "subSection"]);
+        ).populate({
+				path: "courseContent",
+				populate: {
+					path: "subSection",
+				},
+			})
+			.exec();
 
         return res.status(200).json({
             success:true,
@@ -37,17 +43,17 @@ exports.createSection = async (req , res) => {
 }
 
 //update section
-exports.deleteSection = async (req, res) => {
+exports.updateSection = async (req, res) => {
     try {
-        const {name , sectionId} = req.body;
-        if(!name || !sectionId){
+        const {sectionName, sectionId} = req.body;
+        if(!sectionName || !sectionId){
             return res.status(400).json({
                 success:false,
                 message: "Please fill in all fields."
             });
         }
 
-        const updateSection = await Section.findByIdAndUpdate(sectionId, {name}, {new:true});
+        const updateSection = await Section.findByIdAndUpdate(sectionId, {sectionName}, {new:true});
 
         return res.status(200).json({
             success:true,

@@ -14,6 +14,8 @@ exports.createCourse = async (req, res) => {
       price,
       tag,
       category,
+      instructions,
+      status
     } = req.body;
     const thumbnail = req.files.thumbnailImage;
 
@@ -33,8 +35,13 @@ exports.createCourse = async (req, res) => {
       });
     }
 
+    if (!status || status === undefined) {
+			status = "Draft";
+		}
     const userId = res.user._id;
-    const instructorDetails = await User.findById(userId);
+    const instructorDetails = await User.findById(userId , {
+			accountType: "Instructor",
+		});
     if (!instructorDetails) {
       return res.status(404).json({
         success: false,
@@ -42,7 +49,7 @@ exports.createCourse = async (req, res) => {
       });
     }
 
-    const categoryDetails = await Category.findById(tag);
+    const categoryDetails = await Category.findById(category);
     if (!categoryDetails) {
       return res.status(404).json({
         success: false,
@@ -65,6 +72,8 @@ exports.createCourse = async (req, res) => {
       category: categoryDetails._id,
       language,
       thumbnail: thumbnailImage.secure_url,
+      status: status,
+			instructions: instructions,
     });
 
     await User.findByIdAndUpdate(
@@ -117,7 +126,8 @@ exports.showAllCourses = async (req, res) => {
         ratingAndReviews: true,
         studentsEnrolled: true,
       }
-    );
+    ).populate("instructor")
+			.exec();
     res.status(200).json({
       success: true,
       data: allCourses,

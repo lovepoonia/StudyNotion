@@ -21,19 +21,22 @@ const userSchema = new mongoose.Schema({
         type:String,
         required:true,
     },
-    confirmPassword:{
-        type:String,
-        required:true,
-    },
     accountType:{
         type:String,
         required:true,
-        enum:["admin","student", "instructor"],
+        enum:["Admin","Student", "nstructor"],
     },
+    active: {
+        type: Boolean,
+        default: true,
+	},
+	approved: {
+        type: Boolean,
+        default: true,
+	},
     additionalDetails:{
         type:mongoose.Schema.Types.ObjectId,
         ref:"Profile",
-        required : true
     },
     courses:[
         {
